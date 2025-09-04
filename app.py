@@ -61,6 +61,8 @@ def tech():
         demandes[i]["etat_char"] = etat_from_nbr(demandes[i]["etat"])
 
     demandes = pd.DataFrame(reorder_data(demandes))
+    if len(demandes)==0:
+        return render_template('tech_etat.html', demandes=demandes)
     if request.method == 'POST':
         code = request.form.get("code")
         if code:
@@ -94,7 +96,8 @@ def tech2():
     for i in range(len(demandes)):
         demandes[i]["etat_char"] = etat_from_nbr(demandes[i]["etat"])
     demandes = pd.DataFrame(reorder_data(demandes))
-    demandes = demandes.merge(model.df_pred[["code", "pred_proba", "pred_label"]], on="code", how="left")
+    if len(model.df_pred)!=0:
+        demandes = demandes.merge(model.df_pred[["code", "pred_proba", "pred_label"]], on="code", how="left")
     demandes = demandes.to_dict(orient='records')
     if request.method == 'POST':
         code = request.form['code']
