@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="content rounded p-4 shadow">
+        <h3 style="text-align: center;">Formulaire de Demande</h3><hr class="bg-light">
+    <form action="/submit" method="POST">
+        <label for="ppr">PPR</label><br>
+        <input class="form-control" style="border-radius: 50px;" type="text" id="ppr" name="ppr" required><br><br>
+        
+        <div class="d-flex justify-content-center">
+            <div class="w-50 pr-4">
+                <label for="nom" class="d-block">Nom</label>
+                <input class="form-control d-inline" style="border-radius: 50px;" type="text" id="nom" name="nom" required>
+            </div>        
+            <div class="w-50 pl-4">
+                <label for="prenom" class="d-block">Prénom</label>
+                <input class="form-control d-inline" style="border-radius: 50px;" type="text" id="prenom" name="prenom" required>
+            </div>
+        </div>
+        
+        <br><br>
+        <label for="ppr">Objet</label><br>
+        <input class="form-control" style="border-radius: 50px;" type="text" id="objet" name="objet" required><br><br>
+
+        
+        <label for="description">Description</label><br>
+        <textarea class="form-control" id="description" style="border-radius: 30px;" name="description" rows="4" required></textarea><br><br>
+
+        <label for="bureau">Bureau</label><br>
+        <input class="form-control" style="border-radius: 50px;" type="text" id="bureau" name="bureau" required><br><br>
+
+        <label for="direction">Direction</label><br>
+        <input class="form-control" style="border-radius: 50px;" type="text" id="direction" name="direction" required><br><br>
+
+        <label for="mail">Email</label><br>
+        <input class="form-control" style="border-radius: 50px;" type="email" id="mail" name="mail" required><br><br>
+
+        <button type="submit" class="btn btn2">Envoyer</button>
+    </form>
+    </div>
+{% endblock %}

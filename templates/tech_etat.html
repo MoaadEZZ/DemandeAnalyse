@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content p-5 justify-content-center rounded ">
+<div class="table-responsive">
+<table id="myTable" class="table mt-2">
+            <thead class="table-dark">
+                <tr>
+                    <th>Code</th>
+                    <th>Objet</th>
+                    <th>etat</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for demande in demandes %}
+                <tr class="{% if demande.etat == 3 %}row_valide{% elif demande.etat == 4 %}row_refuse{% elif demande.etat == 2 %}row_waiting{% else %}bg-light{% endif %}">
+                    <td>{{ demande.code }}</td>
+                    <td>{{ demande.objet }}</td>
+                    <td>{{ demande.etat_char }}</td>
+                    <td>{{ demande.date_etat }}</td>
+                    <td>{{ demande.description_demande }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+</div>
+</div>
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        $(document).ready(function () {
+            $('#myTable').DataTable({
+                language: {
+                    url: "{{ url_for('static', filename='Json/fr-FR.json') }}"
+                }
+            });
+        });
+    </script>
+
+{% endblock %}
+
+

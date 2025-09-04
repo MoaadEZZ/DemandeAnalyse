@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content rounded p-4 shadow">
+    <h2>Suivi des demandes</h2>
+    <form action="/suivi" method="post">
+        <div class="form-group">
+            <label for="code">Entrez votre code :</label>
+            <input type="text" style="border-radius: 50px;" id="code" name="code" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn2 mt-2">Rechercher</button>
+    </form>
+
+    {% if demande %}
+        <h3 class="mt-4">Résultats :</h3>
+        <table class="table table-sm mt-2 border-dark">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Objet</th>
+                    <th>Statut</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="{% if demande.etat == 3 %}row_valide{% elif demande.etat == 4 %}row_refuse{% elif demande.etat == 2 %}row_waiting{% endif %}">
+                    <th>{{ demande.ppr }}</td>
+                    <td>{{ demande.objet }}</td>
+                    <td>{{ demande.etat_char }}</td>
+                    <td>{{ demande.date_demande }}</td>
+                </tr>
+            </tbody>
+        </table>
+    {% elif searched %}
+        <p class="mt-4">Aucune demande trouvée pour le code : {{ searched }}</p>
+    {% endif %}
+</div>
+{% endblock %}

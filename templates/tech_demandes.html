@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block style %}
+    <style>
+        h5,.modal label{
+            color: black;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="content p-5 d-flex justify-content-between rounded-top mw-100" id="title_form">
+        <h2 class="mb-4 mt-4" style="min-width: 300px;">Liste des Demandes</h2>
+        <div class="align-self-center">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_auto_accept">Auto Accepte</button>
+            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal_auto_refuser">Auto refus</button>
+        </div>
+        <button class="btn btn2 align-self-center" data-bs-toggle="modal" data-bs-target="#demandes_par_ppr">demandes par utilisateur</button>
+    </div>
+    <div class="content pl-5 pr-5 pb-5 justify-content-center rounded-bottom mw-100">
+    <div class="table-responsive">
+    <table id="myTable" class="table display p-1 pl-4 pr-4 border">
+        <thead class="table-dark">
+            <tr>
+                <th>Code</th>
+                <th>Objet</th>
+                <th>PPR</th>
+                <th>Date</th>
+                <th>État</th>
+                <th>Action</th>
+                <th>Prédiction</th>
+                <th>Poucentage</th>
+                <th>Historique</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for demande in demandes %}
+                <tr class="{% if demande.etat == 3 %}row_valide{% elif demande.etat == 4 %}row_refuse{% elif demande.etat == 2 %}row_waiting{% else %}bg-light{% endif %}">
+                <td>{{ demande.code }}</td>
+                <td>{{ demande.objet }}</td>
+                <td>{{ demande.ppr }}</td>
+                <td>{{ demande.date_demande }}</td>
+                <td>{{ demande.etat_char }}</td>
+                <td>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal{{ demande.code }}">+</button>
+                </td>
+                <td>{{ demande.pred_label }}</td>
+                <td>{{ demande.pred_proba }}</td>
+                <td>
+                    <form action="/tech/historique" method="POST">
+                        <button type="submit" value="{{demande.code}}" name="code" class="btn btn2">+</button>
+                    </form>
+                </td>
+            </tr>
+
+            <div class="modal fade" id="modal{{ demande.code }}" tabindex="-1" aria-labelledby="modalLabel{{ demande.code }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form method="POST">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalLabel{{ demande.code }}">Traiter Demande</h5>
+                                <button type="button" class="btn-close border-0 rounded" data-bs-dismiss="modal" aria-label="Fermer">x</button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="code" value="{{ demande.code }}">
+
+                                <div class="mb-2">
+                                    <label><strong>PPR:</strong></label>
+                                    <input class="form-control" type="text" value="{{ demande.ppr }}" readonly>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label><strong>Nom:</strong></label>
+                                    <input class="form-control" type="text" value="{{ demande.nom }}" readonly>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label><strong>Prénom:</strong></label>
+                                    <input class="form-control" type="text" value="{{ demande.prenom }}" readonly>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label><strong>Objet:</strong></label>
+                                    <input class="form-control" type="text" value="{{ demande.objet }}" readonly>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label><strong>Description:</strong></label>
+                                    <textarea class="form-control" readonly>{{ demande.description }}</textarea>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label><strong>Bureau:</strong></label>
+                                    <input class="form-control" type="text" value="{{ demande.bureau }}" readonly>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label><strong>Direction:</strong></label>
+                                    <input class="form-control" type="text" value="{{ demande.direction }}" readonly>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label><strong>État:</strong></label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="etat" id="en_cours{{ demande.code }}" value="2">
+                                        <label class="form-check-label" for="en_cours{{ demande.code }}">En cours de traitement</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="etat" id="traiter{{ demande.code }}" value="3" required>
+                                        <label class="form-check-label" for="traiter{{ demande.code }}">Traiter</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="etat" id="refuser{{ demande.code }}" value="4">
+                                        <label class="form-check-label" for="refuser{{ demande.code }}">Refuser</label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label><strong>Description du traitement :</strong></label>
+                                    <textarea class="form-control" name="description"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-success">Soumettre</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <div class="modal p-4 fade" id="modal_auto_accept" tabindex="-1" aria-labelledby="modal_auto_accept_label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modal_auto_accept_label">
+                            Êtes-vous sûr de vouloir accepter automatiquement les demandes traitées par l'IA ?
+                        </h5>
+                        <button type="button" class="btn-close border-0 rounded" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                    </div>
+                    <button type="submit" class="ml-4 mt-4 mb-4 btn btn-success" value="0" name="code">Confirmer</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal_auto_refuser" tabindex="-1" aria-labelledby="modal_auto_refuser_label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modal_auto_refuser_label">
+                            Êtes-vous sûr de vouloir accepter automatiquement les demandes traitées par l'IA ?
+                        </h5>
+                        <button type="button" class="btn-close border-0 rounded" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                    </div>
+                    <button type="submit" class="ml-4 mt-4 mb-4 btn btn-success" value="1" name="code">Confirmer</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="demandes_par_ppr" tabindex="-1" aria-labelledby="demandes_par_ppr_label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="/tech/historique" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="demandes_par_ppr_label">
+                            Demandes par PPR:
+                        </h5>
+                        <button type="button" class="btn-close border-0 rounded" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                    </div>
+                    <label for="ppr" class="ml-4">ppr:</label>
+                    <input type="text" name="ppr" id="ppr" class="form-control m-auto" style="width: 90%;">
+                    <button type="submit" class="ml-4 mt-4 mb-4 btn btn-success">Confirmer</button>
+                    <button type="button" class="btn btn-secondary" name="code" value="" data-bs-dismiss="modal">Annuler</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        $(document).ready(function () {
+            $('#myTable').DataTable({
+                
+            });
+        });
+
+    </script>
+
+{% endblock %}
