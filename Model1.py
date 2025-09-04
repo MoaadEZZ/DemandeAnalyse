@@ -14,6 +14,12 @@ from demande import Demande, load_data, reorder_data
 class Model:
     def __init__(self):
         df = pd.DataFrame(load_data())
+        if len(df)==0:
+            self.df_train = []
+            self.df_test = []
+            self.df_pred = []
+            print("database is empty")
+            return None
         df["date_demande"] = pd.to_datetime(df["date_demande"], format='%Y-%m-%d %H:%M:%S')
 
         acceptance_rate_user = {"code": [], "acceptance_rate_user": []}
@@ -99,7 +105,6 @@ class Model:
         self.df_train = df.iloc[index_train]
         self.df_test = df.iloc[index_test]
         self.df_pred = df.copy()
-        #self.df_pred = df.loc[df["etat"] < 3].copy()
 
         cat_encoded = ohe.fit_transform(self.df_train[cat_features])
         num_scaled = scaler.fit_transform(self.df_train[num_features])
@@ -183,6 +188,8 @@ class Model_Prediction:
     def __init__(self):        
         model = Model()
         self.df_pred = model.df_pred
+        if len(self.df_pred)==0:
+            return None
 
         train_dataset = CustomDataset(model.train_encodings, model.tabular_features, model.df_train["target"].values)
         test_dataset = CustomDataset(model.test_encodings, model.tabular_features_test, model.df_test["target"].values)
@@ -208,9 +215,13 @@ class Model_Prediction:
         )
 
     def train(self):
+        if len(self.df_pred)==0:
+            return None
         self.trainer.train()
 
     def predict(self):
+        if len(self.df_pred)==0:
+            return None
         model = Model()
         self.df_pred = model.df_pred
 
