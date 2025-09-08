@@ -130,7 +130,7 @@ def tech2():
 @app.route('/tech/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        if request.form["name"] == "admin" and request.form["password"] == "123":
+        if request.form["name"] == vars.ADMIN_LOGIN and request.form["password"] == vars.ADMIN_PASSWORD:
             session["name"] = request.form["name"]
             flash('Vous étez connecter.', "success")
             if session.get("path") == "/tech/historique":
@@ -158,4 +158,5 @@ def etat_from_nbr(etat):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+
 
